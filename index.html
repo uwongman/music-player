@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Music Player</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="player">
+      <h1>🎵 Music Player</h1>
+
+      <div class="song-info">
+        <p id="song-title"></p>
+      </div>
+
+      <audio id="audio"></audio>
+
+      <input type="range" id="progress" value="0" />
+
+      <div class="controls">
+        <button id="prev">⏮</button>
+        <button id="play">▶</button>
+        <button id="next">⏭</button>
+      </div>
+
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5" />
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
