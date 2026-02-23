@@ -4,90 +4,127 @@ const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
 const progress = document.getElementById("progress");
 const volume = document.getElementById("volume");
-const songTitle = document.getElementById("song-title");
-const playlistEl = document.getElementById("playlist");
-const currentTimeEl = document.getElementById("current-time");
-const totalTimeEl = document.getElementById("total-time");
+const title = document.getElementById("song-title");
+const playlistElement = document.getElementById("playlist");
 
-const playlist = ["music/song1.mp3", "music/song2.mp3"];
+const songs = ["song1.mp3", "song2.mp3", "song3.mp3"];
 
 let currentIndex = 0;
+let isPlaying = false;
 
 function loadSong(index) {
-  audio.src = playlist[index];
-  songTitle.textContent = playlist[index].split("/").pop();
-  renderPlaylist();
+  audio.src = songs[index];
+  title.textContent = songs[index];
+  updateActiveSong();
 }
 
-function renderPlaylist() {
-  playlistEl.innerHTML = "";
+function playSong() {
+  audio.play();
+  isPlaying = true;
+  playBtn.textContent = "⏸";
+}
 
-  playlist.forEach((song, index) => {
-    const li = document.createElement("li");
-    li.textContent = song.split("/").pop();
+function pauseSong() {
+  audio.pause();
+  isPlaying = false;
+  playBtn.textContent = "▶";
+}
 
-    if (index === currentIndex) {
-      li.classList.add("active");
-    }
+function togglePlay() {
+  isPlaying ? pauseSong() : playSong();
+}
 
-    li.addEventListener("click", () => {
-      currentIndex = index;
-      loadSong(currentIndex);
-      audio.play();
-    });
+function nextSong() {
+  currentIndex++;
+  if (currentIndex >= songs.length) currentIndex = 0;
+  loadSong(currentIndex);
+  playSong();
+}
 
-    playlistEl.appendChild(li);
-  });
+function prevSong() {
+  currentIndex--;
+  if (currentIndex < 0) currentIndex = songs.length - 1;
+  loadSong(currentIndex);
+  playSong();
+}
+
+function updateProgress() {
+  const { duration, currentTime } = audio;
+  if (duration) {
+    progress.value = (currentTime / duration) * 100;
+    document.getElementById("current-time").textContent =
+      formatTime(currentTime);
+    document.getElementById("total-time").textContent = formatTime(duration);
+  }
+}
+
+function setProgress() {
+  const duration = audio.duration;
+  audio.currentTime = (progress.value / 100) * duration;
 }
 
 function formatTime(time) {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
-  return `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 }
 
-playBtn.addEventListener("click", () => {
-  if (audio.paused) {
-    audio.play();
-    playBtn.textContent = "⏸";
-  } else {
-    audio.pause();
-    playBtn.textContent = "▶";
-  }
-});
+function createPlaylist() {
+  songs.forEach((song, index) => {
+    const li = document.createElement("li");
+    li.textContent = song;
+    li.addEventListener("click", () => {
+      currentIndex = index;
+      loadSong(currentIndex);
+      playSong();
+    });
+    playlistElement.appendChild(li);
+  });
+}
 
-nextBtn.addEventListener("click", () => {
-  currentIndex = (currentIndex + 1) % playlist.length;
-  loadSong(currentIndex);
-  audio.play();
-});
+function updateActiveSong() {
+  const items = playlistElement.querySelectorAll("li");
+  items.forEach((item, index) => {
+    item.classList.toggle("active", index === currentIndex);
+  });
+}
 
-prevBtn.addEventListener("click", () => {
-  currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-  loadSong(currentIndex);
-  audio.play();
-});
+playBtn.addEventListener("click", togglePlay);
+nextBtn.addEventListener("click", nextSong);
+prevBtn.addEventListener("click", prevSong);
 
-audio.addEventListener("timeupdate", () => {
-  progress.value = (audio.currentTime / audio.duration) * 100;
-  currentTimeEl.textContent = formatTime(audio.currentTime);
-});
+audio.addEventListener("timeupdate", updateProgress);
+audio.addEventListener("ended", nextSong);
 
-audio.addEventListener("loadedmetadata", () => {
-  totalTimeEl.textContent = formatTime(audio.duration);
-});
-
-progress.addEventListener("input", () => {
-  audio.currentTime = (progress.value / 100) * audio.duration;
-});
+progress.addEventListener("input", setProgress);
 
 volume.addEventListener("input", () => {
   audio.volume = volume.value;
 });
 
-audio.addEventListener("ended", () => {
-  nextBtn.click();
+document.addEventListener("keydown", (e) => {
+  switch (e.code) {
+    case "Space":
+      e.preventDefault();
+      togglePlay();
+      break;
+    case "ArrowRight":
+      nextSong();
+      break;
+    case "ArrowLeft":
+      prevSong();
+      break;
+    case "ArrowUp":
+      volume.value = Math.min(1, parseFloat(volume.value) + 0.05);
+      audio.volume = volume.value;
+      break;
+    case "ArrowDown":
+      volume.value = Math.max(0, parseFloat(volume.value) - 0.05);
+      audio.volume = volume.value;
+      break;
+  }
 });
 
 loadSong(currentIndex);
-renderPlaylist();
+createPlaylist();
+audio.volume = volume.value;
