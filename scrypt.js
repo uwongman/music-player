@@ -9,6 +9,8 @@ const volume = document.getElementById("volume");
 const title = document.getElementById("song-title");
 const playlistElement = document.getElementById("playlist");
 const fileInput = document.getElementById("file-input");
+const themeToggle = document.getElementById("theme-toggle");
+const body = document.body;
 
 let songs = [];
 let currentIndex = 0;
@@ -17,6 +19,7 @@ let isShuffle = false;
 let isRepeat = false;
 
 function loadSong(index) {
+  if (!songs.length) return;
   audio.src = songs[index].url;
   title.textContent = songs[index].name;
   updateActiveSong();
@@ -41,26 +44,18 @@ function togglePlay() {
 
 function nextSong() {
   if (!songs.length) return;
-
-  if (isShuffle) {
-    currentIndex = Math.floor(Math.random() * songs.length);
-  } else {
-    currentIndex = (currentIndex + 1) % songs.length;
-  }
-
+  currentIndex = isShuffle
+    ? Math.floor(Math.random() * songs.length)
+    : (currentIndex + 1) % songs.length;
   loadSong(currentIndex);
   playSong();
 }
 
 function prevSong() {
   if (!songs.length) return;
-
-  if (isShuffle) {
-    currentIndex = Math.floor(Math.random() * songs.length);
-  } else {
-    currentIndex = (currentIndex - 1 + songs.length) % songs.length;
-  }
-
+  currentIndex = isShuffle
+    ? Math.floor(Math.random() * songs.length)
+    : (currentIndex - 1 + songs.length) % songs.length;
   loadSong(currentIndex);
   playSong();
 }
@@ -80,9 +75,9 @@ function setProgress() {
 }
 
 function formatTime(time) {
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  const m = Math.floor(time / 60);
+  const s = Math.floor(time % 60);
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
 function createPlaylist() {
@@ -107,23 +102,19 @@ function updateActiveSong() {
   });
 }
 
-function toggleShuffle() {
+shuffleBtn.addEventListener("click", () => {
   isShuffle = !isShuffle;
   shuffleBtn.classList.toggle("active", isShuffle);
-}
+});
 
-function toggleRepeat() {
+repeatBtn.addEventListener("click", () => {
   isRepeat = !isRepeat;
   repeatBtn.classList.toggle("active", isRepeat);
-}
+});
 
-function handleSongEnd() {
-  if (isRepeat) {
-    playSong();
-  } else {
-    nextSong();
-  }
-}
+audio.addEventListener("ended", () => {
+  isRepeat ? playSong() : nextSong();
+});
 
 fileInput.addEventListener("change", (e) => {
   const files = Array.from(e.target.files);
@@ -133,24 +124,44 @@ fileInput.addEventListener("change", (e) => {
       url: URL.createObjectURL(file),
     });
   });
-
-  if (songs.length === files.length) {
-    loadSong(0);
-  }
-
+  if (songs.length === files.length) loadSong(0);
   createPlaylist();
 });
 
 playBtn.addEventListener("click", togglePlay);
 nextBtn.addEventListener("click", nextSong);
 prevBtn.addEventListener("click", prevSong);
-shuffleBtn.addEventListener("click", toggleShuffle);
-repeatBtn.addEventListener("click", toggleRepeat);
-
 audio.addEventListener("timeupdate", updateProgress);
-audio.addEventListener("ended", handleSongEnd);
-
 progress.addEventListener("input", setProgress);
 volume.addEventListener("input", () => (audio.volume = volume.value));
 
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    e.preventDefault();
+    togglePlay();
+  }
+  if (e.code === "ArrowRight") nextSong();
+  if (e.code === "ArrowLeft") prevSong();
+});
+
+function applyTheme(theme) {
+  body.setAttribute("data-theme", theme);
+  themeToggle.textContent = theme === "dark" ? "🌙" : "☀";
+  localStorage.setItem("theme", theme);
+}
+
+function getPreferredTheme() {
+  const saved = localStorage.getItem("theme");
+  if (saved) return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+themeToggle.addEventListener("click", () => {
+  const current = body.getAttribute("data-theme");
+  applyTheme(current === "dark" ? "light" : "dark");
+});
+
+applyTheme(getPreferredTheme());
 audio.volume = volume.value;

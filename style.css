@@ -5,29 +5,59 @@
 }
 
 body {
-  background: linear-gradient(135deg, #141e30, #243b55);
   font-family: "Segoe UI", sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
+}
+
+body[data-theme="dark"] {
+  background: linear-gradient(135deg, #141e30, #243b55);
   color: white;
 }
 
-.player {
-  width: 780px;
-  padding: 30px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(15px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+body[data-theme="light"] {
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  color: #222;
 }
 
-.player h1 {
-  text-align: center;
+.player {
+  width: 850px;
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  transition: background 0.4s ease;
+}
+
+body[data-theme="dark"] .player {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme="light"] .player {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+#theme-toggle {
+  background: none;
+  border: none;
   font-size: 22px;
-  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+  transform: scale(1.2);
 }
 
 .layout {
@@ -36,13 +66,20 @@ body {
 }
 
 .playlist {
-  width: 230px;
+  width: 250px;
   list-style: none;
   padding: 12px;
-  max-height: 360px;
+  max-height: 400px;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.05);
   border-radius: 14px;
+}
+
+body[data-theme="dark"] .playlist {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="light"] .playlist {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .playlist li {
@@ -50,11 +87,10 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: 0.2s;
-  font-size: 14px;
 }
 
 .playlist li:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 212, 255, 0.2);
 }
 
 .playlist li.active {
@@ -68,38 +104,31 @@ body {
   text-align: center;
 }
 
-.song-info {
-  margin-bottom: 15px;
-  font-size: 17px;
-  font-weight: 500;
-}
-
-.time {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-bottom: 5px;
-}
-
 .controls {
   display: flex;
   justify-content: center;
-  align-items: center;
   margin: 15px 0;
 }
 
 .controls button {
   background: none;
   border: none;
-  color: white;
   font-size: 24px;
   margin: 0 14px;
   cursor: pointer;
   transition: 0.3s ease;
 }
 
+body[data-theme="dark"] .controls button {
+  color: white;
+}
+
+body[data-theme="light"] .controls button {
+  color: #222;
+}
+
 .controls button:hover {
   transform: scale(1.2);
-  color: #00d4ff;
 }
 
 .controls button.active {
@@ -115,60 +144,9 @@ body {
 input[type="range"] {
   width: 100%;
   margin: 10px 0;
-  appearance: none;
-  height: 6px;
-  border-radius: 5px;
-  background: #555;
-  outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #00d4ff;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
 }
 
 #file-input {
   margin-bottom: 15px;
   width: 100%;
-  padding: 8px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  cursor: pointer;
-  border: none;
-}
-
-#file-input::file-selector-button {
-  background: #00d4ff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-#file-input::file-selector-button:hover {
-  background: #00b5d6;
-}
-
-.playlist::-webkit-scrollbar {
-  width: 6px;
-}
-
-.playlist::-webkit-scrollbar-thumb {
-  background: #00d4ff;
-  border-radius: 5px;
-}
-
-.playlist::-webkit-scrollbar-track {
-  background: transparent;
 }
