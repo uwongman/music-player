@@ -15,7 +15,7 @@ body {
 }
 
 .player {
-  width: 760px;
+  width: 780px;
   padding: 30px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.08);
@@ -27,6 +27,7 @@ body {
   text-align: center;
   margin-bottom: 20px;
   font-size: 22px;
+  letter-spacing: 1px;
 }
 
 .layout {
@@ -35,13 +36,13 @@ body {
 }
 
 .playlist {
-  width: 220px;
+  width: 230px;
   list-style: none;
-  padding: 10px;
-  max-height: 350px;
+  padding: 12px;
+  max-height: 360px;
   overflow-y: auto;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .playlist li {
@@ -70,6 +71,7 @@ body {
 .song-info {
   margin-bottom: 15px;
   font-size: 17px;
+  font-weight: 500;
 }
 
 .time {
@@ -92,7 +94,7 @@ body {
   font-size: 24px;
   margin: 0 14px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
 .controls button:hover {
@@ -127,4 +129,46 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   background: #00d4ff;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+#file-input {
+  margin-bottom: 15px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  border: none;
+}
+
+#file-input::file-selector-button {
+  background: #00d4ff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#file-input::file-selector-button:hover {
+  background: #00b5d6;
+}
+
+.playlist::-webkit-scrollbar {
+  width: 6px;
+}
+
+.playlist::-webkit-scrollbar-thumb {
+  background: #00d4ff;
+  border-radius: 5px;
+}
+
+.playlist::-webkit-scrollbar-track {
+  background: transparent;
 }

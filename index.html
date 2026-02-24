@@ -14,16 +14,17 @@
 
         <div class="main-player">
           <div class="song-info">
-            <p id="song-title">song1.mp3</p>
+            <p id="song-title">업로드된 음악 없음</p>
           </div>
+
+          <input type="file" id="file-input" accept="audio/*" multiple />
 
           <audio id="audio"></audio>
 
           <input type="range" id="progress" value="0" />
 
           <div class="time">
-            <span id="current-time">00:00</span>
-            /
+            <span id="current-time">00:00</span> /
             <span id="total-time">00:00</span>
           </div>
 
