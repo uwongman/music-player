@@ -10,7 +10,6 @@ const title = document.getElementById("song-title");
 const playlistElement = document.getElementById("playlist");
 const fileInput = document.getElementById("file-input");
 const themeToggle = document.getElementById("theme-toggle");
-const body = document.body;
 
 let songs = [];
 let currentIndex = 0;
@@ -19,7 +18,6 @@ let isShuffle = false;
 let isRepeat = false;
 
 function loadSong(index) {
-  if (!songs.length) return;
   audio.src = songs[index].url;
   title.textContent = songs[index].name;
   updateActiveSong();
@@ -144,24 +142,16 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "ArrowLeft") prevSong();
 });
 
-function applyTheme(theme) {
-  body.setAttribute("data-theme", theme);
-  themeToggle.textContent = theme === "dark" ? "🌙" : "☀";
-  localStorage.setItem("theme", theme);
-}
-
-function getPreferredTheme() {
-  const saved = localStorage.getItem("theme");
-  if (saved) return saved;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+function setTheme(mode) {
+  document.body.className = mode;
+  themeToggle.textContent = mode === "dark" ? "🌙" : "☀";
+  localStorage.setItem("theme", mode);
 }
 
 themeToggle.addEventListener("click", () => {
-  const current = body.getAttribute("data-theme");
-  applyTheme(current === "dark" ? "light" : "dark");
+  const current = document.body.classList.contains("dark") ? "dark" : "light";
+  setTheme(current === "dark" ? "light" : "dark");
 });
 
-applyTheme(getPreferredTheme());
+setTheme(localStorage.getItem("theme") || "dark");
 audio.volume = volume.value;

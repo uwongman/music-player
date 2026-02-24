@@ -10,35 +10,33 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  transition:
-    background 0.4s ease,
-    color 0.4s ease;
+  transition: 0.3s ease;
 }
 
-body[data-theme="dark"] {
+body.dark {
   background: linear-gradient(135deg, #141e30, #243b55);
   color: white;
 }
 
-body[data-theme="light"] {
+body.light {
   background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
   color: #222;
 }
 
 .player {
-  width: 850px;
+  width: 800px;
   padding: 30px;
   border-radius: 20px;
   backdrop-filter: blur(15px);
-  transition: background 0.4s ease;
+  transition: 0.3s ease;
 }
 
-body[data-theme="dark"] .player {
+body.dark .player {
   background: rgba(255, 255, 255, 0.08);
 }
 
-body[data-theme="light"] .player {
-  background: rgba(255, 255, 255, 0.85);
+body.light .player {
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .header {
@@ -48,16 +46,11 @@ body[data-theme="light"] .player {
   margin-bottom: 20px;
 }
 
-#theme-toggle {
+.theme-btn {
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 20px;
   cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-#theme-toggle:hover {
-  transform: scale(1.2);
 }
 
 .layout {
@@ -66,19 +59,19 @@ body[data-theme="light"] .player {
 }
 
 .playlist {
-  width: 250px;
+  width: 240px;
   list-style: none;
   padding: 12px;
-  max-height: 400px;
+  max-height: 360px;
   overflow-y: auto;
   border-radius: 14px;
 }
 
-body[data-theme="dark"] .playlist {
+body.dark .playlist {
   background: rgba(255, 255, 255, 0.05);
 }
 
-body[data-theme="light"] .playlist {
+body.light .playlist {
   background: rgba(0, 0, 0, 0.05);
 }
 
@@ -87,10 +80,6 @@ body[data-theme="light"] .playlist {
   border-radius: 8px;
   cursor: pointer;
   transition: 0.2s;
-}
-
-.playlist li:hover {
-  background: rgba(0, 212, 255, 0.2);
 }
 
 .playlist li.active {
@@ -119,16 +108,12 @@ body[data-theme="light"] .playlist {
   transition: 0.3s ease;
 }
 
-body[data-theme="dark"] .controls button {
+body.dark .controls button {
   color: white;
 }
 
-body[data-theme="light"] .controls button {
+body.light .controls button {
   color: #222;
-}
-
-.controls button:hover {
-  transform: scale(1.2);
 }
 
 .controls button.active {
