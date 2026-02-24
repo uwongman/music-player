@@ -2,6 +2,8 @@ const audio = document.getElementById("audio");
 const playBtn = document.getElementById("play");
 const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
+const shuffleBtn = document.getElementById("shuffle");
+const repeatBtn = document.getElementById("repeat");
 const progress = document.getElementById("progress");
 const volume = document.getElementById("volume");
 const title = document.getElementById("song-title");
@@ -11,6 +13,8 @@ const songs = ["song1.mp3", "song2.mp3", "song3.mp3"];
 
 let currentIndex = 0;
 let isPlaying = false;
+let isShuffle = false;
+let isRepeat = false;
 
 function loadSong(index) {
   audio.src = songs[index];
@@ -35,15 +39,23 @@ function togglePlay() {
 }
 
 function nextSong() {
-  currentIndex++;
-  if (currentIndex >= songs.length) currentIndex = 0;
+  if (isShuffle) {
+    currentIndex = Math.floor(Math.random() * songs.length);
+  } else {
+    currentIndex++;
+    if (currentIndex >= songs.length) currentIndex = 0;
+  }
   loadSong(currentIndex);
   playSong();
 }
 
 function prevSong() {
-  currentIndex--;
-  if (currentIndex < 0) currentIndex = songs.length - 1;
+  if (isShuffle) {
+    currentIndex = Math.floor(Math.random() * songs.length);
+  } else {
+    currentIndex--;
+    if (currentIndex < 0) currentIndex = songs.length - 1;
+  }
   loadSong(currentIndex);
   playSong();
 }
@@ -89,12 +101,32 @@ function updateActiveSong() {
   });
 }
 
+function toggleShuffle() {
+  isShuffle = !isShuffle;
+  shuffleBtn.classList.toggle("active", isShuffle);
+}
+
+function toggleRepeat() {
+  isRepeat = !isRepeat;
+  repeatBtn.classList.toggle("active", isRepeat);
+}
+
+function handleSongEnd() {
+  if (isRepeat) {
+    playSong();
+  } else {
+    nextSong();
+  }
+}
+
 playBtn.addEventListener("click", togglePlay);
 nextBtn.addEventListener("click", nextSong);
 prevBtn.addEventListener("click", prevSong);
+shuffleBtn.addEventListener("click", toggleShuffle);
+repeatBtn.addEventListener("click", toggleRepeat);
 
 audio.addEventListener("timeupdate", updateProgress);
-audio.addEventListener("ended", nextSong);
+audio.addEventListener("ended", handleSongEnd);
 
 progress.addEventListener("input", setProgress);
 
@@ -113,14 +145,6 @@ document.addEventListener("keydown", (e) => {
       break;
     case "ArrowLeft":
       prevSong();
-      break;
-    case "ArrowUp":
-      volume.value = Math.min(1, parseFloat(volume.value) + 0.05);
-      audio.volume = volume.value;
-      break;
-    case "ArrowDown":
-      volume.value = Math.max(0, parseFloat(volume.value) - 0.05);
-      audio.volume = volume.value;
       break;
   }
 });
