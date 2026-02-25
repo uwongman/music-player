@@ -2,136 +2,131 @@ const audio = document.getElementById("audio");
 const playBtn = document.getElementById("play");
 const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
-const shuffleBtn = document.getElementById("shuffle");
-const repeatBtn = document.getElementById("repeat");
 const progress = document.getElementById("progress");
 const volume = document.getElementById("volume");
-const title = document.getElementById("song-title");
-const playlistElement = document.getElementById("playlist");
-const fileInput = document.getElementById("file-input");
-const themeToggle = document.getElementById("theme-toggle");
+const playlistEl = document.getElementById("playlist");
+const songTitle = document.getElementById("song-title");
+const currentTimeEl = document.getElementById("current-time");
+const totalTimeEl = document.getElementById("total-time");
 
-let songs = [];
+const songs = [
+  { title: "song1.mp3", src: "music/song1.mp3" },
+  { title: "song2.mp3", src: "music/song2.mp3" },
+  { title: "song3.mp3", src: "music/song3.mp3" },
+];
+
 let currentIndex = 0;
-let isPlaying = false;
-let isShuffle = false;
-let isRepeat = false;
 
 function loadSong(index) {
-  audio.src = songs[index].url;
-  title.textContent = songs[index].name;
+  audio.src = songs[index].src;
+  songTitle.textContent = songs[index].title;
   updateActiveSong();
+  localStorage.setItem("lastIndex", index);
 }
 
 function playSong() {
   audio.play();
-  isPlaying = true;
   playBtn.textContent = "⏸";
 }
 
 function pauseSong() {
   audio.pause();
-  isPlaying = false;
   playBtn.textContent = "▶";
 }
 
 function togglePlay() {
-  if (!songs.length) return;
-  isPlaying ? pauseSong() : playSong();
+  audio.paused ? playSong() : pauseSong();
 }
 
-function nextSong() {
-  if (!songs.length) return;
-  currentIndex = isShuffle
-    ? Math.floor(Math.random() * songs.length)
-    : (currentIndex + 1) % songs.length;
+function prevSong() {
+  currentIndex = (currentIndex - 1 + songs.length) % songs.length;
   loadSong(currentIndex);
   playSong();
 }
 
-function prevSong() {
-  if (!songs.length) return;
-  currentIndex = isShuffle
-    ? Math.floor(Math.random() * songs.length)
-    : (currentIndex - 1 + songs.length) % songs.length;
+function nextSong() {
+  currentIndex = (currentIndex + 1) % songs.length;
   loadSong(currentIndex);
   playSong();
 }
 
 function updateProgress() {
-  const { duration, currentTime } = audio;
-  if (duration) {
-    progress.value = (currentTime / duration) * 100;
-    document.getElementById("current-time").textContent =
-      formatTime(currentTime);
-    document.getElementById("total-time").textContent = formatTime(duration);
-  }
+  const percent = (audio.currentTime / audio.duration) * 100;
+  progress.value = percent || 0;
+
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+  totalTimeEl.textContent = formatTime(audio.duration);
+
+  localStorage.setItem("lastTime", audio.currentTime);
 }
 
 function setProgress() {
   audio.currentTime = (progress.value / 100) * audio.duration;
 }
 
+function setVolume() {
+  audio.volume = volume.value;
+  localStorage.setItem("volume", volume.value);
+}
+
 function formatTime(time) {
-  const m = Math.floor(time / 60);
-  const s = Math.floor(time % 60);
-  return `${m}:${s < 10 ? "0" : ""}${s}`;
+  if (isNaN(time)) return "00:00";
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 function createPlaylist() {
-  playlistElement.innerHTML = "";
+  playlistEl.innerHTML = "";
   songs.forEach((song, index) => {
     const li = document.createElement("li");
-    li.textContent = song.name;
+    li.textContent = song.title;
     li.addEventListener("click", () => {
       currentIndex = index;
       loadSong(currentIndex);
       playSong();
     });
-    playlistElement.appendChild(li);
+    playlistEl.appendChild(li);
   });
-  updateActiveSong();
 }
 
 function updateActiveSong() {
-  const items = playlistElement.querySelectorAll("li");
+  const items = playlistEl.querySelectorAll("li");
   items.forEach((item, index) => {
     item.classList.toggle("active", index === currentIndex);
   });
 }
 
-shuffleBtn.addEventListener("click", () => {
-  isShuffle = !isShuffle;
-  shuffleBtn.classList.toggle("active", isShuffle);
-});
+function restorePlayer() {
+  const savedIndex = localStorage.getItem("lastIndex");
+  const savedTime = localStorage.getItem("lastTime");
+  const savedVolume = localStorage.getItem("volume");
 
-repeatBtn.addEventListener("click", () => {
-  isRepeat = !isRepeat;
-  repeatBtn.classList.toggle("active", isRepeat);
-});
+  if (savedIndex !== null) {
+    currentIndex = parseInt(savedIndex);
+  }
 
-audio.addEventListener("ended", () => {
-  isRepeat ? playSong() : nextSong();
-});
+  loadSong(currentIndex);
 
-fileInput.addEventListener("change", (e) => {
-  const files = Array.from(e.target.files);
-  files.forEach((file) => {
-    songs.push({
-      name: file.name,
-      url: URL.createObjectURL(file),
-    });
+  audio.addEventListener("loadedmetadata", () => {
+    if (savedTime !== null) {
+      audio.currentTime = parseFloat(savedTime);
+    }
   });
-  if (songs.length === files.length) loadSong(0);
-  createPlaylist();
-});
+
+  if (savedVolume !== null) {
+    volume.value = savedVolume;
+    audio.volume = savedVolume;
+  }
+}
 
 playBtn.addEventListener("click", togglePlay);
-nextBtn.addEventListener("click", nextSong);
 prevBtn.addEventListener("click", prevSong);
+nextBtn.addEventListener("click", nextSong);
 audio.addEventListener("timeupdate", updateProgress);
 progress.addEventListener("input", setProgress);
-volume.addEventListener("input", () => (audio.volume = volume.value));
+volume.addEventListener("input", setVolume);
+audio.addEventListener("ended", nextSong);
 
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
@@ -142,16 +137,5 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "ArrowLeft") prevSong();
 });
 
-function setTheme(mode) {
-  document.body.className = mode;
-  themeToggle.textContent = mode === "dark" ? "🌙" : "☀";
-  localStorage.setItem("theme", mode);
-}
-
-themeToggle.addEventListener("click", () => {
-  const current = document.body.classList.contains("dark") ? "dark" : "light";
-  setTheme(current === "dark" ? "light" : "dark");
-});
-
-setTheme(localStorage.getItem("theme") || "dark");
-audio.volume = volume.value;
+createPlaylist();
+restorePlayer();
