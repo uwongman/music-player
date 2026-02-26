@@ -8,11 +8,12 @@ const playlistEl = document.getElementById("playlist");
 const songTitle = document.getElementById("song-title");
 const currentTimeEl = document.getElementById("current-time");
 const totalTimeEl = document.getElementById("total-time");
+const coverImg = document.getElementById("cover");
 
 const songs = [
-  { title: "song1.mp3", src: "music/song1.mp3" },
-  { title: "song2.mp3", src: "music/song2.mp3" },
-  { title: "song3.mp3", src: "music/song3.mp3" },
+  { title: "song1.mp3", src: "music/song1.mp3", cover: "images/cover1.jpg" },
+  { title: "song2.mp3", src: "music/song2.mp3", cover: "images/cover2.jpg" },
+  { title: "song3.mp3", src: "music/song3.mp3", cover: "images/cover3.jpg" },
 ];
 
 let currentIndex = 0;
@@ -20,6 +21,7 @@ let currentIndex = 0;
 function loadSong(index) {
   audio.src = songs[index].src;
   songTitle.textContent = songs[index].title;
+  coverImg.src = songs[index].cover;
   updateActiveSong();
   localStorage.setItem("lastIndex", index);
 }
@@ -71,9 +73,9 @@ function setVolume() {
 
 function formatTime(time) {
   if (isNaN(time)) return "00:00";
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  const m = Math.floor(time / 60);
+  const s = Math.floor(time % 60);
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 function createPlaylist() {
@@ -102,9 +104,7 @@ function restorePlayer() {
   const savedTime = localStorage.getItem("lastTime");
   const savedVolume = localStorage.getItem("volume");
 
-  if (savedIndex !== null) {
-    currentIndex = parseInt(savedIndex);
-  }
+  if (savedIndex !== null) currentIndex = parseInt(savedIndex);
 
   loadSong(currentIndex);
 

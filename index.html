@@ -5,38 +5,36 @@
     <title>Music Player</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body class="dark">
+  <body>
     <div class="player">
-      <div class="header">
-        <h1>🎵 Music Player</h1>
-        <button id="theme-toggle" class="theme-btn">🌙</button>
-      </div>
+      <h1>🎵 Music Player</h1>
 
       <div class="layout">
         <ul id="playlist" class="playlist"></ul>
 
         <div class="main-player">
-          <div class="song-info">
-            <p id="song-title">업로드된 음악 없음</p>
+          <div class="album-art">
+            <img id="cover" src="images/cover1.jpg" alt="album cover" />
           </div>
 
-          <input type="file" id="file-input" accept="audio/*" multiple />
+          <div class="song-info">
+            <p id="song-title">song1.mp3</p>
+          </div>
 
           <audio id="audio"></audio>
 
           <input type="range" id="progress" value="0" />
 
           <div class="time">
-            <span id="current-time">00:00</span> /
+            <span id="current-time">00:00</span>
+            /
             <span id="total-time">00:00</span>
           </div>
 
           <div class="controls">
-            <button id="shuffle">🔀</button>
             <button id="prev">⏮</button>
             <button id="play">▶</button>
             <button id="next">⏭</button>
-            <button id="repeat">🔁</button>
           </div>
 
           <input
