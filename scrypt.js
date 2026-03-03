@@ -139,3 +139,8 @@ document.addEventListener("keydown", (e) => {
 
 createPlaylist();
 restorePlayer();
+function playSong() {
+  audio.play();
+  playBtn.textContent = "⏸";
+  coverImg.classList.add("playing");
+}

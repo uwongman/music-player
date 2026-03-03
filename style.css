@@ -140,3 +140,15 @@ input[type="range"]::-webkit-slider-thumb {
   background: #00d4ff;
   cursor: pointer;
 }
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.album-art img.playing {
+  animation: spin 6s linear infinite;
+}
