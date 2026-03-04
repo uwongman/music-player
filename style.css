@@ -152,3 +152,7 @@ input[type="range"]::-webkit-slider-thumb {
 .album-art img.playing {
   animation: spin 6s linear infinite;
 }
+#shuffle.active {
+  color: #00d4ff;
+  transform: scale(1.2);
+}

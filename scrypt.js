@@ -2,6 +2,7 @@ const audio = document.getElementById("audio");
 const playBtn = document.getElementById("play");
 const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
+const shuffleBtn = document.getElementById("shuffle");
 const progress = document.getElementById("progress");
 const volume = document.getElementById("volume");
 const playlistEl = document.getElementById("playlist");
@@ -17,6 +18,7 @@ const songs = [
 ];
 
 let currentIndex = 0;
+let isShuffle = false;
 
 function loadSong(index) {
   audio.src = songs[index].src;
@@ -29,11 +31,13 @@ function loadSong(index) {
 function playSong() {
   audio.play();
   playBtn.textContent = "⏸";
+  coverImg.classList.add("playing");
 }
 
 function pauseSong() {
   audio.pause();
   playBtn.textContent = "▶";
+  coverImg.classList.remove("playing");
 }
 
 function togglePlay() {
@@ -41,15 +45,40 @@ function togglePlay() {
 }
 
 function prevSong() {
+  if (isShuffle) {
+    randomSong();
+    return;
+  }
   currentIndex = (currentIndex - 1 + songs.length) % songs.length;
   loadSong(currentIndex);
   playSong();
 }
 
 function nextSong() {
+  if (isShuffle) {
+    randomSong();
+    return;
+  }
   currentIndex = (currentIndex + 1) % songs.length;
   loadSong(currentIndex);
   playSong();
+}
+
+function randomSong() {
+  let randomIndex;
+  do {
+    randomIndex = Math.floor(Math.random() * songs.length);
+  } while (randomIndex === currentIndex);
+
+  currentIndex = randomIndex;
+  loadSong(currentIndex);
+  playSong();
+}
+
+function toggleShuffle() {
+  isShuffle = !isShuffle;
+  shuffleBtn.classList.toggle("active", isShuffle);
+  localStorage.setItem("shuffle", isShuffle);
 }
 
 function updateProgress() {
@@ -103,8 +132,13 @@ function restorePlayer() {
   const savedIndex = localStorage.getItem("lastIndex");
   const savedTime = localStorage.getItem("lastTime");
   const savedVolume = localStorage.getItem("volume");
+  const savedShuffle = localStorage.getItem("shuffle");
 
   if (savedIndex !== null) currentIndex = parseInt(savedIndex);
+  if (savedShuffle === "true") {
+    isShuffle = true;
+    shuffleBtn.classList.add("active");
+  }
 
   loadSong(currentIndex);
 
@@ -123,6 +157,8 @@ function restorePlayer() {
 playBtn.addEventListener("click", togglePlay);
 prevBtn.addEventListener("click", prevSong);
 nextBtn.addEventListener("click", nextSong);
+shuffleBtn.addEventListener("click", toggleShuffle);
+
 audio.addEventListener("timeupdate", updateProgress);
 progress.addEventListener("input", setProgress);
 volume.addEventListener("input", setVolume);
@@ -139,8 +175,3 @@ document.addEventListener("keydown", (e) => {
 
 createPlaylist();
 restorePlayer();
-function playSong() {
-  audio.play();
-  playBtn.textContent = "⏸";
-  coverImg.classList.add("playing");
-}
